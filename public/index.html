@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpellBee Champions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .mic-active {
+            color: #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+        .timer-bar {
+            transition: width 1s linear;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        /* Add this inside your <style> block */
+        .grade-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .grade-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-bg {
+            background-color: #e0f2fe; /* Light sky blue */
+            opacity: 0.7;
+        }
+
+    /* This is the style for the selected card */
+        .grade-card-selected {
+            border-color: #0ea5e9; /* sky-500 */
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .grade-card-selected .icon-bg {
+            background-color: #7dd3fc; /* Lighter sky blue */
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div id="app-container" class="w-full max-w-2xl mx-auto p-4">
+
+        <!-- Setup Screen -->
+        <div id="setup-screen" class="card p-8 md:p-12 text-center">
+    <img src="/images/apple.jpeg" alt="Educational banner with an apple on books" class="hidden banner-img mb-8 rounded-lg">
+    <h1 class="text-4xl md:text-5xl font-bold text-sky-600 mb-4">SpellBee Champions</h1>
+    <p class="text-gray-500 mb-8">Ready to become a spelling champion? Pick your grade and let's start the adventure!</p>
+    <div class="space-y-6">
+        <input id="student-name" type="text" placeholder="Enter Your Name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 text-lg" disabled>
+        
+        <div id="grade-selection-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <button class="grade-btn grade-card p-4 text-center rounded-2xl border-2 border-transparent" data-grade="1"><div class="icon-bg mx-auto mb-3 h-16 w-16 rounded-full flex items-center justify-center text-sky-500"><i class="fas fa-child fa-2x"></i></div><h3 class="font-bold text-gray-800">Grade 1</h3><p class="text-sm text-gray-500">Simple words</p></button>
+            <button class="grade-btn grade-card p-4 text-center rounded-2xl border-2 border-transparent" data-grade="2"><div class="icon-bg mx-auto mb-3 h-16 w-16 rounded-full flex items-center justify-center text-sky-500"><i class="fas fa-leaf fa-2x"></i></div><h3 class="font-bold text-gray-800">Grade 2</h3><p class="text-sm text-gray-500">Easy words</p></button>
+            <button class="grade-btn grade-card p-4 text-center rounded-2xl border-2 border-transparent" data-grade="3"><div class="icon-bg mx-auto mb-3 h-16 w-16 rounded-full flex items-center justify-center text-sky-500"><i class="fas fa-seedling fa-2x"></i></div><h3 class="font-bold text-gray-800">Grade 3</h3><p class="text-sm text-gray-500">Medium words</p></button>
+            <button class="grade-btn grade-card p-4 text-center rounded-2xl border-2 border-transparent" data-grade="4"><div class="icon-bg mx-auto mb-3 h-16 w-16 rounded-full flex items-center justify-center text-sky-500"><i class="fas fa-rocket fa-2x"></i></div><h3 class="font-bold text-gray-800">Grade 4</h3><p class="text-sm text-gray-500">Tricky words</p></button>
+            <button class="grade-btn grade-card p-4 text-center rounded-2xl border-2 border-transparent" data-grade="5"><div class="icon-bg mx-auto mb-3 h-16 w-16 rounded-full flex items-center justify-center text-sky-500"><i class="fas fa-crown fa-2x"></i></div><h3 class="font-bold text-gray-800">Grade 5</h3><p class="text-sm text-gray-500">Hard words</p></button>
+            <button class="grade-btn grade-card p-4 text-center rounded-2xl border-2 border-transparent" data-grade="6"><div class="icon-bg mx-auto mb-3 h-16 w-16 rounded-full flex items-center justify-center text-sky-500"><i class="fas fa-star fa-2x"></i></div><h3 class="font-bold text-gray-800">Grade 6</h3><p class="text-sm text-gray-500">Expert words</p></button>
+        </div>
+
+        <button id="start-quiz-btn" class="btn w-full bg-sky-500 text-white font-bold py-4 px-6 rounded-xl text-lg hover:bg-sky-600 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center" disabled>
+            Start Quiz
+        </button>
+         <button id="view-records-btn" class="btn w-full bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-xl text-lg hover:bg-gray-300 flex items-center justify-center" disabled>
+            <i class="fas fa-list-alt mr-2"></i> View Records
+        </button>
+    </div>
+</div>
+
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden card p-8 md:p-12 text-center">
+            <div class="flex justify-between items-center mb-6">
+                <div id="question-counter" class="text-lg font-semibold text-gray-600">Item: 1/10</div>
+                <div id="score-display" class="text-lg font-semibold text-gray-600">Score: 0</div>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4 mb-8 overflow-hidden">
+                <div id="timer-bar" class="bg-sky-500 h-4 rounded-full timer-bar" style="width: 100%;"></div>
+            </div>
+            <p class="text-gray-500 mb-4 text-xl">Listen to the word and then spell it out loud.</p>
+            <div id="word-display" class="h-16 flex items-center justify-center mb-6">
+                <p id="feedback-message" class="text-2xl font-bold"></p>
+            </div>
+            <i id="mic-icon" class="fas fa-microphone-slash text-6xl text-gray-400"></i>
+            <p id="spelled-word" class="mt-6 text-2xl font-semibold text-gray-700 h-8"></p>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden card p-8 md:p-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-sky-600 mb-2">Quiz Complete!</h2>
+            <p id="final-score" class="text-center text-2xl text-gray-700 font-semibold mb-6"></p>
+            <p id="assessment-message" class="text-center text-lg text-gray-500 mb-8"></p>
+
+            <div id="loading-spinner" class="text-center hidden">
+                <i class="fas fa-spinner fa-spin text-4xl text-sky-500"></i>
+                <p class="mt-2 text-gray-600">Generating your personalized report...</p>
+            </div>
+            
+            <div id="report-container" class="hidden">
+                 <h3 class="text-2xl font-bold text-gray-800 border-b-2 border-sky-200 pb-2 mb-4">Report for Improvement</h3>
+                 <div id="gemini-report" class="prose max-w-none text-gray-600 space-y-4"></div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <button id="restart-quiz-btn" class="btn bg-sky-500 text-white font-bold py-3 px-8 rounded-xl text-lg hover:bg-sky-600">
+                    Play Again
+                </button>
+            </div>
+        </div>
+
+        <!-- Records Screen -->
+        <div id="records-screen" class="hidden card p-8 md:p-12">
+             <h2 class="text-3xl md:text-4xl font-bold text-center text-sky-600 mb-6">Quiz Records</h2>
+             <div class="table-container border rounded-lg">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Name</th>
+                            <th scope="col" class="px-6 py-3">Grade</th>
+                            <th scope="col" class="px-6 py-3">Score</th>
+                            <th scope="col" class="px-6 py-3">Date</th>
+                            <th scope="col" class="px-6 py-3 text-center">Report</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-table-body">
+                        <!-- Records will be populated here -->
+                    </tbody>
+                </table>
+             </div>
+             <div class="mt-8 text-center">
+                <button id="back-to-setup-btn" class="btn bg-sky-500 text-white font-bold py-3 px-8 rounded-xl text-lg hover:bg-sky-600">
+                    Back
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Report Modal -->
+    <div id="report-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 relative">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Improvement Report</h3>
+            <div id="modal-report-content" class="prose max-w-none text-gray-600 space-y-4 max-h-[60vh] overflow-y-auto">
+                <!-- Report content goes here -->
+            </div>
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgZFwTco5Ef4To1HhPYA5fH0Oc6xokfhE",
+            authDomain: "spellingapp-cloud927.firebaseapp.com",
+            projectId: "spellingapp-cloud927",
+            storageBucket: "spellingapp-cloud927.firebasestorage.app",
+            messagingSenderId: "899504343509",
+            appId: "1:899504343509:web:376959ac98318ecc4b555c",
+            measurementId: "G-YEP0X0XTS2"
+        };
+
+        const appId = firebaseConfig.projectId;
+        let db;
+        let auth;
+
+        // --- DOM Elements ---
+        const setupScreen = document.getElementById('setup-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const recordsScreen = document.getElementById('records-screen');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const studentNameInput = document.getElementById('student-name');
+        const gradeSelectionContainer = document.getElementById('grade-selection-container');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerBar = document.getElementById('timer-bar');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const micIcon = document.getElementById('mic-icon');
+        const spelledWord = document.getElementById('spelled-word');
+        const finalScore = document.getElementById('final-score');
+        const assessmentMessage = document.getElementById('assessment-message');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const reportContainer = document.getElementById('report-container');
+        const geminiReport = document.getElementById('gemini-report');
+        const restartQuizBtn = document.getElementById('restart-quiz-btn');
+        const viewRecordsBtn = document.getElementById('view-records-btn');
+        const backToSetupBtn = document.getElementById('back-to-setup-btn');
+        const recordsTableBody = document.getElementById('records-table-body');
+        const reportModal = document.getElementById('report-modal');
+        const modalReportContent = document.getElementById('modal-report-content');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        // --- State Variables ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizWords = [];
+        let incorrectWords = [];
+        let timerInterval;
+        let studentName = '';
+        let gradeLevel = 1;
+        let gradeSelected = false;
+
+        const updateStartButtonState = () => {
+            const isNameEntered = studentNameInput.value.trim() !== '';
+            startQuizBtn.disabled = !(isNameEntered && gradeSelected);
+        };
+
+        (async () => {
+            try {
+                // Check if the user has replaced the placeholder API key
+                if (firebaseConfig && firebaseConfig.apiKey) {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    studentNameInput.placeholder = "Authenticating...";
+
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            console.log("Firebase Authenticated Successfully.");
+                            // Enable UI elements now that auth is complete
+                            studentNameInput.disabled = false;
+                            viewRecordsBtn.disabled = false;
+                            studentNameInput.placeholder = "Enter Your Name";
+                            // Check if a name is already present (e.g., from browser autofill)
+                            updateStartButtonState();
+                        } else {
+                            console.log("User is signed out.");
+                            // Keep UI disabled if auth fails
+                            studentNameInput.disabled = true;
+                            viewRecordsBtn.disabled = true;
+                            startQuizBtn.disabled = true;
+                            studentNameInput.placeholder = "Authentication Failed";
+                        }
+                    });
+
+                    // For live deployment, we'll use anonymous sign-in.
+                    await signInAnonymously(auth);
+
+                } else {
+                    console.error("Firebase config is using placeholder values.");
+                    startQuizBtn.disabled = true;
+                    studentNameInput.placeholder = "App Configuration Error";
+                    const appContainer = document.getElementById('app-container');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg';
+                    errorDiv.innerHTML = `<b>App Configuration Error:</b> Your Firebase keys are missing. Please follow the instructions in the <code>index.html</code> file. <a href="https://console.firebase.google.com/u/0/project/spellingapp-cloud927/settings/general" target="_blank" class="font-bold underline">Click here to get your keys.</a>`;
+                    appContainer.prepend(errorDiv);
+                }
+            } catch (e) {
+                console.error("Error initializing or authenticating Firebase:", e);
+                startQuizBtn.disabled = true;
+                 studentNameInput.placeholder = "Authentication Error";
+            }
+        })();
+
+        
+        // --- Speech Synthesis & Recognition ---
+        const synth = window.speechSynthesis;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+        if (recognition) {
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+        } else {
+            const appContainer = document.getElementById('app-container');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg';
+            errorDiv.textContent = "Sorry, your browser doesn't support Speech Recognition. Please use a browser like Chrome or Edge for the full experience.";
+            appContainer.prepend(errorDiv);
+        }
+
+        // --- Fallback Word Lists ---
+        const fallbackWordLists = {
+            1: ['cat', 'dog', 'sun', 'run', 'big', 'red', 'bed', 'hen', 'pig', 'box'],
+            2: ['apple', 'friend', 'happy', 'little', 'school', 'water', 'three', 'play', 'look', 'jump'],
+            3: ['because', 'beautiful', 'family', 'together', 'picture', 'animal', 'morning', 'kitchen', 'purple', 'story'],
+            4: ['different', 'important', 'question', 'thought', 'through', 'enough', 'example', 'language', 'science', 'believe'],
+            5: ['accommodate', 'cemetery', 'conscience', 'exaggerate', 'necessary', 'privilege', 'rhythm', 'separate', 'sincerely', 'tomorrow'],
+            6: ['bureaucracy', 'fluorescent', 'maneuver', 'onomatopoeia', 'pharaoh', 'questionnaire', 'recommend', 'syllable', 'conscientious', 'pneumonia']
+        };
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultButton = document.querySelector('.grade-btn[data-grade="1"]');
+            if (defaultButton) {
+                defaultButton.classList.add('grade-card-selected');
+                gradeSelected = true; // Set the flag to true
+                updateStartButtonState();
+            }
+        });
+
+        startQuizBtn.addEventListener('click', startQuiz);
+        restartQuizBtn.addEventListener('click', () => { location.reload(); });
+        studentNameInput.addEventListener('input', updateStartButtonState);
+        viewRecordsBtn.addEventListener('click', () => {
+            setupScreen.classList.add('hidden');
+            recordsScreen.classList.remove('hidden');
+            fetchAndDisplayRecords();
+        });
+        backToSetupBtn.addEventListener('click', () => {
+            recordsScreen.classList.add('hidden');
+            setupScreen.classList.remove('hidden');
+        });
+
+        const hideReportModal = () => {
+            reportModal.classList.add('hidden');
+            reportModal.classList.remove('flex');
+        };
+
+        closeModalBtn.addEventListener('click', hideReportModal);
+        reportModal.addEventListener('click', (e) => {
+            if (e.target === reportModal) {
+                hideReportModal();
+            }
+        });
+
+
+        gradeSelectionContainer.addEventListener('click', (e) => {
+            const clickedButton = e.target.closest('.grade-btn');
+            if (!clickedButton) return;
+
+            gradeSelectionContainer.querySelectorAll('.grade-btn').forEach(btn => {
+                btn.classList.remove('grade-card-selected');
+            });
+            
+            clickedButton.classList.add('grade-card-selected');
+            gradeLevel = parseInt(clickedButton.dataset.grade);
+
+            gradeSelected = true;
+            updateStartButtonState();
+        });
+
+        if (recognition) {
+            recognition.onresult = handleRecognitionResult;
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                micIcon.classList.remove('mic-active', 'text-sky-500');
+                micIcon.classList.add('text-gray-400');
+
+                if (event.error === 'no-speech') {
+                    clearTimeout(timerInterval);
+                    stopListening();
+                    feedbackMessage.textContent = "I didn't hear you. Let's try again.";
+                    
+                    setTimeout(() => {
+                        const word = quizWords[currentQuestionIndex];
+                        speak(`Let's try that again. Spell the word: ${word}`, () => {
+                            feedbackMessage.textContent = 'Now, spell it out loud!';
+                            startTimer();
+                            startListening();
+                        });
+                    }, 2000); 
+                }
+            };
+        }
+        
+        async function generateWordList(grade) {
+            const apiKey = "AIzaSyCTYCby64KXyN2KNyLVhWOKCuutPVUiWqU";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const prompt = `Generate a JSON array of 20 unique, age-appropriate spelling words for a Grade ${grade} student. The words should be lowercase.`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: { type: "ARRAY", items: { type: "STRING" } }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API call failed with status: ${response.status}`);
+                const result = await response.json();
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (jsonText) {
+                    const words = JSON.parse(jsonText);
+                    if(Array.isArray(words) && words.length >= 10) return words;
+                }
+                throw new Error("Invalid format received from AI.");
+            } catch (error) {
+                console.error("Error generating word list from AI:", error);
+                const appContainer = document.getElementById('app-container');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg fixed top-5 left-1/2 -translate-x-1/2 z-50';
+                errorDiv.textContent = "Could not generate new words. Using a default list for this quiz.";
+                appContainer.prepend(errorDiv);
+                setTimeout(() => errorDiv.remove(), 5000);
+                return fallbackWordLists[grade];
+            }
+        }
+
+        const showReportModal = (reportHtml) => {
+            modalReportContent.innerHTML = reportHtml;
+            reportModal.classList.remove('hidden');
+            reportModal.classList.add('flex');
+        };
+        
+        async function fetchAndDisplayRecords() {
+            if (!db) {
+                recordsTableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">Database not connected.</td></tr>';
+                return;
+            }
+
+            recordsTableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4"><i class="fas fa-spinner fa-spin text-2xl"></i></td></tr>';
+
+            try {
+                const recordsRef = collection(db, `artifacts/${appId}/public/data/spellingRecords`);
+                const querySnapshot = await getDocs(recordsRef);
+                
+                recordsTableBody.innerHTML = ''; 
+
+                if (querySnapshot.empty) {
+                    recordsTableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">No records found.</td></tr>';
+                    return;
+                }
+
+                const records = [];
+                querySnapshot.forEach(doc => records.push(doc.data()));
+                records.sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis());
+
+                records.forEach(data => {
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white border-b';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${data.name}</td>
+                        <td class="px-6 py-4">${data.grade}</td>
+                        <td class="px-6 py-4">${data.score} / ${data.totalItems}</td>
+                        <td class="px-6 py-4">${new Date(data.timestamp.toMillis()).toLocaleDateString()}</td>
+                        <td class="px-6 py-4 text-center"></td>
+                    `;
+                    
+                    const reportCell = row.querySelector('td:last-child');
+                    const viewButton = document.createElement('button');
+                    viewButton.innerHTML = '<i class="fas fa-eye mr-1"></i> View';
+                    viewButton.className = 'btn bg-sky-100 text-sky-700 font-semibold py-1 px-3 rounded-lg hover:bg-sky-200 text-sm';
+                    viewButton.onclick = () => showReportModal(data.report || "<p>No report available.</p>");
+                    
+                    reportCell.appendChild(viewButton);
+                    recordsTableBody.appendChild(row);
+                });
+
+            } catch(error) {
+                console.error("Error fetching records: ", error);
+                recordsTableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-red-500">Error loading records.</td></tr>';
+            }
+        }
+
+        async function startQuiz() {
+            studentName = studentNameInput.value.trim();
+            if (!studentName) return;
+
+            startQuizBtn.disabled = true;
+            startQuizBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Generating Words...`;
+
+            score = 0;
+            currentQuestionIndex = 0;
+            incorrectWords = [];
+            
+            const allWords = await generateWordList(gradeLevel);
+            
+            startQuizBtn.disabled = false;
+            startQuizBtn.innerHTML = `Start Quiz`;
+            updateStartButtonState();
+            
+            if (!allWords || allWords.length < 10) {
+                console.error("Failed to get a valid word list.");
+                return;
+            }
+
+            const shuffledWords = [...allWords].sort(() => 0.5 - Math.random());
+            quizWords = shuffledWords.slice(0, 10); 
+
+            setupScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            updateQuizDisplay();
+            askQuestion();
+        }
+
+        function askQuestion() {
+            if (currentQuestionIndex < quizWords.length) {
+                const word = quizWords[currentQuestionIndex];
+                feedbackMessage.textContent = 'Listen...';
+                spelledWord.textContent = '';
+                
+                speak(`Please spell the word: ${word}`, () => {
+                    feedbackMessage.textContent = 'Now, spell it out loud!';
+                    startTimer();
+                    startListening();
+                });
+            } else {
+                endQuiz();
+            }
+        }
+
+        function speak(text, callback) {
+            if (synth.speaking) synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.onend = callback;
+            utterance.onerror = (e) => {
+                console.error("Speech synthesis error", e);
+                if(callback) callback();
+            };
+            synth.speak(utterance);
+        }
+
+        function startListening() {
+            if(recognition) {
+                micIcon.classList.remove('fa-microphone-slash', 'text-gray-400');
+                micIcon.classList.add('fa-microphone', 'text-sky-500', 'mic-active');
+                try { recognition.start(); } catch(e){ console.error("Recognition start error", e); }
+            } else {
+                feedbackMessage.textContent = 'Speech recognition not supported.';
+            }
+        }
+
+        function stopListening() {
+             if(recognition) {
+                micIcon.classList.remove('fa-microphone', 'text-sky-500', 'mic-active');
+                micIcon.classList.add('fa-microphone-slash', 'text-gray-400');
+                recognition.stop();
+            }
+        }
+
+        function handleRecognitionResult(event) {
+            stopListening();
+            clearTimeout(timerInterval);
+            const transcript = event.results[0][0].transcript;
+            const formattedTranscript = transcript.replace(/[\s-]/g, '').toLowerCase();
+            spelledWord.textContent = `You spelled: ${transcript}`;
+            checkAnswer(formattedTranscript);
+        }
+
+        function checkAnswer(userAnswer) {
+            const correctAnswer = quizWords[currentQuestionIndex];
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                feedbackMessage.textContent = 'Correct!';
+                speak('Correct!');
+            } else {
+                incorrectWords.push({ word: correctAnswer, attempt: userAnswer || "no answer" });
+                feedbackMessage.textContent = `The correct spelling is ${correctAnswer.split('').join(' ')}`;
+                speak(`Sorry, the correct spelling is ${correctAnswer}`);
+            }
+            currentQuestionIndex++;
+            updateQuizDisplay();
+            setTimeout(askQuestion, 3000); 
+        }
+
+        function startTimer() {
+            // Clear any previous timer to ensure no duplicates are running
+            clearTimeout(timerInterval);
+
+            // Instantly reset the timer bar to full without a transition
+            timerBar.style.transition = 'none';
+            timerBar.style.width = '100%';
+
+            // A trick to force the browser to apply the above style change before starting the new transition
+            void timerBar.offsetWidth;
+
+            // Now, apply the animation for the 15-second countdown
+            timerBar.style.transition = 'width 15s linear';
+            timerBar.style.width = '0%';
+            
+            // Set a timeout to trigger when the 15 seconds are up
+            timerInterval = setTimeout(() => {
+                stopListening();
+                feedbackMessage.textContent = "Time's up!";
+                checkAnswer(''); // Check answer with an empty string for timeout
+            }, 15000);
+        }
+
+        function updateQuizDisplay() {
+            if (currentQuestionIndex < quizWords.length) {
+                questionCounter.textContent = `Item: ${currentQuestionIndex + 1}/${quizWords.length}`;
+            }
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+
+        async function endQuiz() {
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            const percentage = (score / quizWords.length) * 100;
+            finalScore.textContent = `Your Score: ${score} out of ${quizWords.length} (${percentage.toFixed(0)}%)`;
+
+            if (percentage >= 90) assessmentMessage.textContent = "Excellent work! You're a spelling superstar!";
+            else if (percentage >= 70) assessmentMessage.textContent = "Great job! Keep practicing to become even better.";
+            else if (percentage >= 50) assessmentMessage.textContent = "Good effort! A little more practice will make a big difference.";
+            else assessmentMessage.textContent = "Keep trying! Every mistake is a chance to learn.";
+            
+            await generateReportAndSave();
+        }
+        
+        async function generateReportAndSave() {
+            loadingSpinner.classList.remove('hidden');
+            reportContainer.classList.add('hidden');
+
+            let reportContent = '';
+            try {
+                // --- THIS IS THE MODIFIED PART ---
+                // Instead of calling Google's API, we call our own server's endpoint.
+                const response = await fetch('https://spelling-app-899504343509.us-central1.run.app/api/generate-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // Send all the necessary data in the request body
+                    body: JSON.stringify({
+                        studentName: studentName,
+                        grade: gradeLevel,
+                        score: score,
+                        totalItems: quizWords.length,
+                        incorrectWords: incorrectWords
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server returned an error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                reportContent = result.report || '<p>Could not generate a report at this time.</p>';
+                // --- END OF MODIFIED PART ---
+
+                geminiReport.innerHTML = reportContent;
+
+            } catch (error) {
+                console.error("Error fetching report from backend:", error);
+                reportContent = "<p>There was an error generating your report. Please check your connection and that the server is running.</p>";
+                geminiReport.innerHTML = reportContent;
+            } finally {
+                 loadingSpinner.classList.add('hidden');
+                 reportContainer.classList.remove('hidden');
+            }
+
+            // The code to save to Firestore remains the same
+            if (db) {
+                try {
+                    // NOTE: Use the appId you defined at the top of your script
+                    const collectionPath = `artifacts/${appId}/public/data/spellingRecords`;
+                    await addDoc(collection(db, collectionPath), {
+                        name: studentName,
+                        grade: gradeLevel,
+                        score: score,
+                        totalItems: quizWords.length,
+                        incorrectWords: incorrectWords,
+                        report: reportContent, // Save the report from our server
+                        timestamp: serverTimestamp()
+                    });
+                     console.log("Successfully saved record to Firestore.");
+                } catch (e) {
+                    console.error("Error adding document to Firestore: ", e);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
